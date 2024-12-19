@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG System Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        #response h3 {
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+        #response p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        #response li {
+            margin-left: 20px;
+            list-style: disc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ask Your Query</h1>
+    <form id="queryForm">
+        <label for="query">Enter your query:</label><br>
+        <input type="text" id="query" name="query" placeholder="e.g., What is Machine Learning?" required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response">
+        <h3>Response:</h3>
+        <div id="responseText">Your response will appear here.</div>
+    </div>
+
+    <script>
+        // Form submission event listener
+        document.getElementById('queryForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const query = document.getElementById('query').value;
+            const responseDiv = document.getElementById('responseText');
+
+            // Clear previous response
+            responseDiv.innerHTML = "Fetching response...";
+
+            try {
+                // Send the query to the backend
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    responseDiv.innerHTML = data.response; // Update with the received response
+                } else {
+                    responseDiv.innerHTML = "An error occurred. Please try again.";
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                responseDiv.innerHTML = "Unable to fetch the response. Check your network connection.";
+            }
+        });
+    </script>
+</body>
+</html>
